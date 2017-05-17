@@ -269,9 +269,9 @@
                 break;
             case DRAWTYPE_Text:
             {
-                CGContextSetRGBFillColor(context, model.rgba.r, model.rgba.g, model.rgba.b, model.rgba.a);//设置填充颜色
-                [model.text drawInRect:model.frame withAttributes:@{NSFontAttributeName:model.font}];
-//                [model.text drawInRect:model.frame withFont:model.font];
+                //                CGContextSetRGBFillColor(context, model.rgba.r, model.rgba.g, model.rgba.b, model.rgba.a);//设置填充颜色
+                //                [model.text drawInRect:model.frame withFont:model.font];
+                [model.text drawInRect:model.frame withAttributes:@{NSFontAttributeName:model.font, NSForegroundColorAttributeName:[UIColor colorWithRed:model.rgba.r green:model.rgba.g blue:model.rgba.b alpha:model.rgba.a]}];//直接使用attribute
             }
                 break;
             case DRAWTYPE_Bezier2:
