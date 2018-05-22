@@ -465,6 +465,7 @@
                 [currentPath stroke];
             }
         }
+        [model _setBezierPath:currentPath];
     }];
 }
 
@@ -481,6 +482,13 @@ rgba WZZRGBAMake(CGFloat r, CGFloat g, CGFloat b, CGFloat a) {
 }
 
 @implementation WZZDrawModel
+
+//设置path
+- (void)_setBezierPath:(UIBezierPath *)path {
+    _bezierPath = path;
+}
+
 @end
+
 @implementation WZZCircle
 @end

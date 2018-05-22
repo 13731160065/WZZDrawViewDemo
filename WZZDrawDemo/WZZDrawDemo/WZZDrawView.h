@@ -220,6 +220,7 @@ rgba WZZRGBAMake(CGFloat r, CGFloat g, CGFloat b, CGFloat a);
 //画模型
 @interface WZZDrawModel : NSObject
 
+@property (nonatomic, strong, readonly) UIBezierPath * bezierPath;
 @property (assign, nonatomic) DRAWTYPE type;
 @property (nonatomic, strong) NSMutableArray <NSValue *>* points;
 @property (assign, nonatomic) CGRect frame;
@@ -234,6 +235,11 @@ rgba WZZRGBAMake(CGFloat r, CGFloat g, CGFloat b, CGFloat a);
  */
 @property (assign, nonatomic) rgba rgba;
 @property (strong, nonatomic) UIFont * font;
+
+/**
+ 设置path
+ */
+- (void)_setBezierPath:(UIBezierPath *)path;
 
 @end
 
