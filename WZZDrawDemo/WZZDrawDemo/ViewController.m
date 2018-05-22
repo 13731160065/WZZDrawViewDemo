@@ -54,7 +54,7 @@
     UIColor * color = [UIColor colorWithRed:red green:green blue:blue alpha:1.0f];
     
     //画
-    [_vvv drawARectWithFrame:CGRectMake(arc4random()%width, arc4random()%width, arc4random()%width, arc4random()%width) full:YES color:color border:1.0f];
+    [_vvv drawARectWithFrame:CGRectMake(arc4random()%width, arc4random()%width, arc4random()%width, arc4random()%width) color:color border:1.0f full:YES];
     
     //刷新
     [_vvv reloadData];
@@ -84,7 +84,7 @@
     UIColor * color = [UIColor colorWithRed:red green:green blue:blue alpha:1.0f];
     
     //画
-    [_vvv drawSectorWithPoint:CGPointMake(arc4random()%width, arc4random()%width) r:arc4random()%width/4 startAngle:arc4random()%360 endAngle:arc4random()%360 isClockwise:YES color:color border:10.0f isFull:NO];
+    [_vvv drawSectorWithPoint:CGPointMake(arc4random()%width, arc4random()%width) r:arc4random()%width/4 startAngle:arc4random()%360 endAngle:arc4random()%360 color:color border:10.0f isClockwise:YES isFull:NO];
     
     //刷新
     [_vvv reloadData];
@@ -121,7 +121,13 @@
 
 //三次
 - (void)ppp {
-    [_vvv drawBezier2WithPoint1:CGPointMake(width/3, width/2) point2:CGPointMake(arc4random()%width, arc4random()%width) point3:CGPointMake(arc4random()%width, arc4random()%width) point4:CGPointMake(width/3*2, width/2)];
+    //随机生成颜色
+    CGFloat red = arc4random()%256/255.0f;
+    CGFloat green = arc4random()%256/255.0f;
+    CGFloat blue = arc4random()%256/255.0f;
+    UIColor * color = [UIColor colorWithRed:red green:green blue:blue alpha:1.0f];
+    
+    [_vvv drawBezier3WithPoint1:CGPointMake(width/3, width/2) point2:CGPointMake(arc4random()%width, arc4random()%width) point3:CGPointMake(arc4random()%width, arc4random()%width) point4:CGPointMake(width/3*2, width/2) color:color border:1.0f];
     [_vvv reloadData];
 }
 
@@ -133,7 +139,13 @@
 
 //二次
 - (void)fff {
-    [_vvv drawBezier2WithPoint1:CGPointMake(width/3, width/2) point2:CGPointMake(arc4random()%width, arc4random()%width) point3:CGPointMake(width/3*2, width/2)];
+    //随机生成颜色
+    CGFloat red = arc4random()%256/255.0f;
+    CGFloat green = arc4random()%256/255.0f;
+    CGFloat blue = arc4random()%256/255.0f;
+    UIColor * color = [UIColor colorWithRed:red green:green blue:blue alpha:1.0f];
+    
+    [_vvv drawBezier2WithPoint1:CGPointMake(width/3, width/2) point2:CGPointMake(arc4random()%width, arc4random()%width) point3:CGPointMake(width/3*2, width/2) color:color border:1.0f];
     [_vvv reloadData];
 }
 
@@ -152,8 +164,9 @@
 }
 
 - (IBAction)bbb:(id)sender {
-    [timer invalidate];
-    timer = [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(ccc) userInfo:nil repeats:YES];
+    [self ccc];
+//    [timer invalidate];
+//    timer = [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(ccc) userInfo:nil repeats:YES];
 }
 
 //画图片
@@ -163,6 +176,23 @@
     [_vvv drawImage:[UIImage imageNamed:@"ff"] frame:_vvv.bounds];
     
     //刷新
+    [_vvv reloadData];
+}
+
+- (IBAction)polygonClick:(id)sender {
+    //随机点
+    NSMutableArray * arr = [NSMutableArray array];
+    for (int i = 0; i < arc4random()%10+3; i++) {
+        [arr addObject:[NSValue valueWithCGPoint:CGPointMake(arc4random()%width, arc4random()%width)]];
+    }
+    
+    //随机生成颜色
+    CGFloat red = arc4random()%256/255.0f;
+    CGFloat green = arc4random()%256/255.0f;
+    CGFloat blue = arc4random()%256/255.0f;
+    UIColor * color = [UIColor colorWithRed:red green:green blue:blue alpha:1.0f];
+    
+    [_vvv drawPolygonWithPointArr:arr color:color border:1.0f isFull:YES];
     [_vvv reloadData];
 }
 

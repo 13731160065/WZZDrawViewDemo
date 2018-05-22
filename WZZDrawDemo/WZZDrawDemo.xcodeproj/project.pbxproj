@@ -215,6 +215,7 @@
 				TargetAttributes = {
 					71125A081D743B1000C6707E = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = L3EKEXQ8PC;
 					};
 					71125A211D743B1000C6707E = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -425,9 +426,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = L3EKEXQ8PC;
 				INFOPLIST_FILE = WZZDrawDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.wzz.WZZDrawDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.www.fff;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -436,9 +438,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = L3EKEXQ8PC;
 				INFOPLIST_FILE = WZZDrawDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.wzz.WZZDrawDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.www.fff;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -508,6 +511,7 @@
 				71125A381D743B1000C6707E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		71125A391D743B1000C6707E /* Build configuration list for PBXNativeTarget "WZZDrawDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -516,6 +520,7 @@
 				71125A3B1D743B1000C6707E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		71125A3C1D743B1000C6707E /* Build configuration list for PBXNativeTarget "WZZDrawDemoUITests" */ = {
 			isa = XCConfigurationList;
@@ -524,6 +529,7 @@
 				71125A3E1D743B1000C6707E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

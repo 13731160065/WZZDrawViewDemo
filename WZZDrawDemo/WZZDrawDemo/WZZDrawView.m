@@ -8,6 +8,7 @@
 
 #import "WZZDrawView.h"
 @import QuartzCore;
+#define WZZDrawView_UseQuartz2d 0
 
 @interface WZZDrawView ();
 
@@ -20,6 +21,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         _modelsArr = [NSMutableArray array];
+        _shapeLayerArr = [NSMutableArray array];
     }
     return self;
 }
@@ -28,6 +30,7 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         _modelsArr = [NSMutableArray array];
+        _shapeLayerArr = [NSMutableArray array];
     }
     return self;
 }
@@ -44,7 +47,9 @@
 }
 
 //画点
-- (void)drawPoint:(CGPoint)point color:(UIColor *)color border:(CGFloat)border {
+- (void)drawPoint:(CGPoint)point
+            color:(UIColor *)color
+           border:(CGFloat)border {
     WZZCircle * circle = [[WZZCircle alloc] init];
     circle.O = point;
     circle.r = border/2;
@@ -61,11 +66,15 @@
 }
 
 //画线
-- (void)drawLineWithPoint1:(CGPoint)point1 point2:(CGPoint)point2 color:(UIColor *)color border:(CGFloat)border {
+- (void)drawLineWithPoint1:(CGPoint)point1
+                    point2:(CGPoint)point2
+                     color:(UIColor *)color
+                    border:(CGFloat)border {
     WZZDrawModel * model = [[WZZDrawModel alloc] init];
     model.type = DRAWTYPE_Line;
-    model.point1 = point1;
-    model.point2 = point2;
+    model.points = [NSMutableArray array];
+    [model.points addObject:[NSValue valueWithCGPoint:point1]];
+    [model.points addObject:[NSValue valueWithCGPoint:point2]];
     model.color = color;
     model.border = border;
     [self.modelsArr addObject:model];
@@ -75,7 +84,10 @@
 }
 
 //画方形
-- (void)drawARectWithFrame:(CGRect)frame full:(BOOL)full color:(UIColor *)color border:(CGFloat)border {
+- (void)drawARectWithFrame:(CGRect)frame
+                     color:(UIColor *)color
+                    border:(CGFloat)border
+                      full:(BOOL)full {
     WZZDrawModel * model = [[WZZDrawModel alloc] init];
     model.type = DRAWTYPE_Rect;
     model.frame = frame;
@@ -89,7 +101,8 @@
 }
 
 //画图片
-- (void)drawImage:(UIImage *)image frame:(CGRect)frame {
+- (void)drawImage:(UIImage *)image
+            frame:(CGRect)frame {
     WZZDrawModel * model = [[WZZDrawModel alloc] init];
     model.type = DRAWTYPE_Image;
     model.frame = frame;
@@ -101,7 +114,11 @@
 }
 
 //画圆
-- (void)drawCircleWithPoint:(CGPoint)point r:(CGFloat)r color:(UIColor *)color border:(CGFloat)border isFull:(BOOL)full {
+- (void)drawCircleWithPoint:(CGPoint)point
+                          r:(CGFloat)r
+                      color:(UIColor *)color
+                     border:(CGFloat)border
+                     isFull:(BOOL)full {
     WZZCircle * circle = [[WZZCircle alloc] init];
     circle.O = point;
     circle.r = r;
@@ -118,7 +135,14 @@
 }
 
 //画扇形
-- (void)drawSectorWithPoint:(CGPoint)point r:(CGFloat)r startAngle:(CGFloat)sAngle endAngle:(CGFloat)eAngle isClockwise:(BOOL)isClock color:(UIColor *)color border:(CGFloat)border isFull:(BOOL)full {
+- (void)drawSectorWithPoint:(CGPoint)point
+                          r:(CGFloat)r
+                 startAngle:(CGFloat)sAngle
+                   endAngle:(CGFloat)eAngle
+                      color:(UIColor *)color
+                     border:(CGFloat)border
+                isClockwise:(BOOL)isClock
+                     isFull:(BOOL)full {
     WZZCircle * circle = [[WZZCircle alloc] init];
     circle.O = point;
     circle.r = r;
@@ -138,7 +162,10 @@
 }
 
 //画文字
-- (void)drawText:(NSString *)text frame:(CGRect)frame font:(UIFont *)font color:(rgba)rgba {
+- (void)drawText:(NSString *)text
+           frame:(CGRect)frame
+            font:(UIFont *)font
+           color:(rgba)rgba {
     WZZDrawModel * model = [[WZZDrawModel alloc] init];
     model.type = DRAWTYPE_Text;
     model.rgba = rgba;
@@ -152,7 +179,10 @@
 }
 
 //画椭圆
-- (void)drawNormalCircleWithFrame:(CGRect)frame color:(UIColor *)color border:(CGFloat)border isFull:(BOOL)full {
+- (void)drawNormalCircleWithFrame:(CGRect)frame
+                            color:(UIColor *)color
+                           border:(CGFloat)border
+                           isFull:(BOOL)full {
     WZZDrawModel * model = [[WZZDrawModel alloc] init];
     model.type = DRAWTYPE_NormalCircle;
     model.frame = frame;
@@ -166,12 +196,19 @@
 }
 
 //画二次贝塞尔曲线
-- (void)drawBezier2WithPoint1:(CGPoint)point1 point2:(CGPoint)point2 point3:(CGPoint)point3 {
+- (void)drawBezier2WithPoint1:(CGPoint)point1
+                       point2:(CGPoint)point2
+                       point3:(CGPoint)point3
+                        color:(UIColor *)color
+                       border:(CGFloat)border {
     WZZDrawModel * model = [[WZZDrawModel alloc] init];
     model.type = DRAWTYPE_Bezier2;
-    model.point1 = point1;
-    model.point2 = point2;
-    model.point3 = point3;
+    model.border = border;
+    model.color = color;
+    model.points = [NSMutableArray array];
+    [model.points addObject:[NSValue valueWithCGPoint:point1]];
+    [model.points addObject:[NSValue valueWithCGPoint:point2]];
+    [model.points addObject:[NSValue valueWithCGPoint:point3]];
     [self.modelsArr addObject:model];
     if (_autoReload) {
         [self reloadData];
@@ -179,13 +216,39 @@
 }
 
 //画三次贝塞尔曲线
-- (void)drawBezier2WithPoint1:(CGPoint)point1 point2:(CGPoint)point2 point3:(CGPoint)point3 point4:(CGPoint)point4 {
+- (void)drawBezier3WithPoint1:(CGPoint)point1
+                       point2:(CGPoint)point2
+                       point3:(CGPoint)point3
+                       point4:(CGPoint)point4
+                        color:(UIColor *)color
+                       border:(CGFloat)border {
     WZZDrawModel * model = [[WZZDrawModel alloc] init];
     model.type = DRAWTYPE_Bezier3;
-    model.point1 = point1;
-    model.point2 = point2;
-    model.point3 = point3;
-    model.point4 = point4;
+    model.border = border;
+    model.color = color;
+    model.points = [NSMutableArray array];
+    [model.points addObject:[NSValue valueWithCGPoint:point1]];
+    [model.points addObject:[NSValue valueWithCGPoint:point2]];
+    [model.points addObject:[NSValue valueWithCGPoint:point3]];
+    [model.points addObject:[NSValue valueWithCGPoint:point4]];
+    [self.modelsArr addObject:model];
+    if (_autoReload) {
+        [self reloadData];
+    }
+}
+
+//画多边形
+- (void)drawPolygonWithPointArr:(NSArray <NSValue *>*)pointArr
+                          color:(UIColor *)color
+                         border:(CGFloat)border
+                         isFull:(BOOL)isFull {
+    WZZDrawModel * model = [[WZZDrawModel alloc] init];
+    model.type = DRAWTYPE_Polygon;
+    model.full = isFull;
+    model.border = border;
+    model.color = color;
+    model.points = [NSMutableArray arrayWithArray:pointArr];
+    
     [self.modelsArr addObject:model];
     if (_autoReload) {
         [self reloadData];
@@ -196,9 +259,11 @@
 - (void)drawRect:(CGRect)rect {
     CGContextRef context = UIGraphicsGetCurrentContext();
     [self.modelsArr enumerateObjectsUsingBlock:^(WZZDrawModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
+        UIBezierPath * currentPath = [UIBezierPath bezierPath];
         //框颜色和宽度
         if (model.color) {
             CGContextSetStrokeColorWithColor(context, model.color.CGColor);//线框颜色
+            CGContextSetFillColorWithColor(context, model.color.CGColor);
         }
         if (model.border) {
             CGContextSetLineWidth(context, model.border);//线的宽度
@@ -206,22 +271,27 @@
         switch (model.type) {
             case DRAWTYPE_Point:
             {
-                //画点
-                CGPoint a[2] = {model.point1, model.point2};
-                CGContextAddLines(context, a, 2);//添加点
-                CGContextDrawPath(context, kCGPathStroke); //根据坐标绘制路径
+                //画点其实用的是画圆的方法，这个方法不会走
             }
                 break;
             case DRAWTYPE_Line:
             {
+                CGPoint point1 = [model.points[0] CGPointValue];
+                CGPoint point2 = [model.points[1] CGPointValue];
                 //画线
-                CGPoint a[2] = {model.point1, model.point2};
+#if WZZDrawView_UseQuartz2d
+                CGPoint a[2] = {point1, point2};
                 CGContextAddLines(context, a, 2);//添加线
                 CGContextDrawPath(context, kCGPathStroke); //根据坐标绘制路径
+#else
+                [currentPath moveToPoint:point1];
+                [currentPath addLineToPoint:point2];
+#endif
             }
                 break;
             case DRAWTYPE_Rect:
             {
+#if WZZDrawView_UseQuartz2d
                 if (model.full) {
                     CGContextFillRect(context,model.frame);//填充框
                 } else {
@@ -232,6 +302,9 @@
                     CGContextSetFillColorWithColor(context, model.color.CGColor);//填充颜色
                 }
                 CGContextDrawPath(context, kCGPathFillStroke);//绘画路径
+#else
+                currentPath = [UIBezierPath bezierPathWithRect:model.frame];
+#endif
             }
                 break;
             case DRAWTYPE_Image:
@@ -245,6 +318,7 @@
                 break;
             case DRAWTYPE_Circle:
             {
+#if WZZDrawView_UseQuartz2d
                 CGContextAddArc(context, model.circle.O.x, model.circle.O.y, model.circle.r,  0, 2*M_PI, 1);
                 
                 if (model.color&&model.full) {
@@ -253,10 +327,14 @@
                 } else if (model.color&&!model.full) {
                     CGContextDrawPath(context, kCGPathStroke); //绘制路径
                 }
+#else
+                currentPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(model.circle.O.x-model.circle.r, model.circle.O.y-model.circle.r, model.circle.r*2, model.circle.r*2)];
+#endif
             }
                 break;
             case DRAWTYPE_Sector:
             {
+#if WZZDrawView_UseQuartz2d
                 if (model.full) {
                     CGContextMoveToPoint(context, model.circle.O.x, model.circle.O.y);
                 }
@@ -267,6 +345,9 @@
                 } else if (model.color&&!model.full) {
                     CGContextDrawPath(context, kCGPathStroke); //绘制路径
                 }
+#else
+                currentPath = [UIBezierPath bezierPathWithArcCenter:model.circle.O radius:model.circle.r startAngle:model.circle.startAngle endAngle:model.circle.endAngle clockwise:model.circle.isClock];
+#endif
             }
                 break;
             case DRAWTYPE_Text:
@@ -279,22 +360,42 @@
             case DRAWTYPE_Bezier2:
             {
                 //二次曲线
-                CGContextMoveToPoint(context, model.point1.x, model.point1.y);//设置Path的起点
-                CGContextAddQuadCurveToPoint(context,model.point2.x, model.point2.y, model.point3.x, model.point3.y);//设置贝塞尔曲线的控制点坐标和终点坐标
+                CGPoint point1 = [model.points[0] CGPointValue];
+                CGPoint point2 = [model.points[1] CGPointValue];
+                CGPoint point3 = [model.points[2] CGPointValue];
+                
+#if WZZDrawView_UseQuartz2d
+                CGContextMoveToPoint(context, point1.x, point1.y);//设置Path的起点
+                CGContextAddQuadCurveToPoint(context,point2.x, point2.y, point3.x, point3.y);//设置贝塞尔曲线的控制点坐标和终点坐标
                 CGContextStrokePath(context);
+#else
+                [currentPath moveToPoint:point1];
+                [currentPath addQuadCurveToPoint:point3 controlPoint:point2];
+#endif
             }
                 break;
             case DRAWTYPE_Bezier3:
             {
                 //三次曲线函数
-                CGContextMoveToPoint(context, model.point1.x, model.point1.y);//设置Path的起点
-                CGContextAddCurveToPoint(context,model.point2.x, model.point2.y, model.point3.x, model.point3.y, model.point4.x, model.point4.y);//设置贝塞尔曲线的控制点坐标和控制点坐标终点坐标
+                CGPoint point1 = [model.points[0] CGPointValue];
+                CGPoint point2 = [model.points[1] CGPointValue];
+                CGPoint point3 = [model.points[2] CGPointValue];
+                CGPoint point4 = [model.points[3] CGPointValue];
+                
+#if WZZDrawView_UseQuartz2d
+                CGContextMoveToPoint(context, point1.x, point1.y);//设置Path的起点
+                CGContextAddCurveToPoint(context, point2.x, point2.y, point3.x, point3.y, point4.x, point4.y);//设置贝塞尔曲线的控制点坐标和控制点坐标终点坐标
                 CGContextStrokePath(context);
+#else
+                [currentPath moveToPoint:point1];
+                [currentPath addCurveToPoint:point4 controlPoint1:point2 controlPoint2:point3];
+#endif
             }
                 break;
             case DRAWTYPE_NormalCircle:
             {
                 //画椭圆
+#if WZZDrawView_UseQuartz2d
                 CGContextAddEllipseInRect(context, model.frame); //椭圆
                 if (model.color&&model.full) {
                     CGContextSetFillColorWithColor(context, model.color.CGColor);//填充颜色
@@ -302,11 +403,67 @@
                 } else if (model.color&&!model.full) {
                     CGContextDrawPath(context, kCGPathStroke); //绘制路径
                 }
+#else
+                currentPath = [UIBezierPath bezierPathWithOvalInRect:model.frame];
+#endif
+            }
+                break;
+            case DRAWTYPE_Polygon:
+            {
+                //画多边形
+                [model.points enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    CGPoint point = [obj CGPointValue];
+                    if (idx == 0) {
+                        [currentPath moveToPoint:point];
+                    } else {
+                        [currentPath addLineToPoint:point];
+                    }
+                }];
+                [currentPath closePath];
             }
                 break;
                 
             default:
                 break;
+        }
+        if (!model.border) {
+            model.border = 1.0f;
+        }
+        currentPath.lineWidth = model.border;
+        currentPath.lineCapStyle = kCGLineCapRound;//曲线重点样式
+        currentPath.lineJoinStyle = kCGLineJoinMiter;//曲线连接点样式
+        
+        if (self.animation) {
+            CAShapeLayer * shapeLayer = [CAShapeLayer layer];
+            [self.layer addSublayer:shapeLayer];
+            
+            shapeLayer.fillColor = [UIColor clearColor].CGColor;
+            shapeLayer.strokeColor = [UIColor clearColor].CGColor;
+            shapeLayer.lineWidth =  model.border;
+            shapeLayer.lineCap = kCALineCapRound;
+            shapeLayer.lineJoin = kCALineJoinRound;
+            if (model.full) {
+                shapeLayer.fillColor = model.color.CGColor;
+            } else {
+                shapeLayer.strokeColor = model.color.CGColor;
+            }
+            shapeLayer.path = currentPath.CGPath;
+            
+            
+            // 创建Animation
+            CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+            animation.fromValue = @(0.0);
+            animation.toValue = @(1.0);
+            shapeLayer.autoreverses = NO;
+            animation.duration = 3.0;
+            [shapeLayer addAnimation:animation forKey:nil];
+        } else {
+            //绘制
+            if (model.full) {
+                [currentPath fill];
+            } else {
+                [currentPath stroke];
+            }
         }
     }];
 }
